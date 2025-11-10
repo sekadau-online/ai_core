@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personality - AI Core</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="container">
+        <h1>🎭 AI Personality System</h1>
+        
+        <p class="subtitle">Update AI personality traits based on interactions</p>
+
+        <div class="form-container">
+            <form id="personalityForm" onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label for="input">Input Text *</label>
+                    <textarea 
+                        id="input" 
+                        name="input" 
+                        rows="4" 
+                        required 
+                        placeholder="e.g., 'halo! terima kasih banyak atas bantuannya!'"
+                    ></textarea>
+                    <small>Keywords affect personality: halo/terima kasih (happiness ↑), apa/mengapa/bagaimana (curiosity ↑), bahaya/error/warning (caution ↑)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="response">Response Text *</label>
+                    <textarea 
+                        id="response" 
+                        name="response" 
+                        rows="3" 
+                        required 
+                        placeholder="e.g., 'Sama-sama, senang membantu Anda'"
+                    ></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">🎯 Update Personality</button>
+            </form>
+
+            <div id="result" style="display: none;"></div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+    <script>
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const resultDiv = document.getElementById('result');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Processing...';
+            
+            const formData = {
+                input: form.input.value,
+                response: form.response.value
+            };
+            
+            try {
+                const response = await fetch('/api/personality', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    const p = data.data;
+                    resultDiv.className = 'result-card alert-success';
+                    resultDiv.innerHTML = `
+                        <h3>✅ Personality Updated!</h3>
+                        <div class="personality-traits">
+                            <div class="trait">
+                                <span class="trait-label">😊 Happiness:</span>
+                                <div class="trait-bar">
+                                    <div class="trait-fill" style="width: ${p.happiness * 100}%"></div>
+                                </div>
+                                <span class="trait-value">${(p.happiness * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="trait">
+                                <span class="trait-label">🤔 Curiosity:</span>
+                                <div class="trait-bar">
+                                    <div class="trait-fill" style="width: ${p.curiosity * 100}%"></div>
+                                </div>
+                                <span class="trait-value">${(p.curiosity * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="trait">
+                                <span class="trait-label">⚠️ Caution:</span>
+                                <div class="trait-bar">
+                                    <div class="trait-fill" style="width: ${p.caution * 100}%"></div>
+                                </div>
+                                <span class="trait-value">${(p.caution * 100).toFixed(1)}%</span>
+                            </div>
+                        </div>
+                        <div class="dominant-trait">
+                            <strong>Dominant Trait:</strong> ${p.dominant_trait}
+                        </div>
+                        <div class="influenced-response">
+                            <strong>Influenced Response:</strong><br>
+                            ${p.influenced_response}
+                        </div>
+                    `;
+                    resultDiv.style.display = 'block';
+                } else {
+                    throw new Error(data.message || 'Failed to update personality');
+                }
+            } catch (error) {
+                resultDiv.className = 'result-card alert-error';
+                resultDiv.innerHTML = '❌ Error: ' + error.message;
+                resultDiv.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🎯 Update Personality';
+            }
+        }
+    </script>
+</body>
+</html>

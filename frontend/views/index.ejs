@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - AI Core Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="container">
+        <section class="hero">
+            <h1>🤖 AI Core Dashboard</h1>
+            <p class="subtitle">Memory Management & Pattern Recognition System</p>
+            
+            <div class="status-card <%= apiStatus === 'online' ? 'status-online' : 'status-offline' %>">
+                <h3>API Status</h3>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span><%= apiStatus === 'online' ? '✅ Online' : '❌ Offline' %></span>
+                </div>
+                <p>Backend: <code><%= backendUrl %></code></p>
+            </div>
+        </section>
+
+        <section class="features">
+            <h2>Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>Experiences</h3>
+                    <p>View and manage AI experiences</p>
+                    <a href="/experiences" class="btn">View Experiences</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">➕</div>
+                    <h3>Create</h3>
+                    <p>Add new experiences to memory</p>
+                    <a href="/create" class="btn">Create New</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Search</h3>
+                    <p>Search through experiences</p>
+                    <a href="/search" class="btn">Search</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Statistics</h3>
+                    <p>View patterns and analytics</p>
+                    <a href="/stats" class="btn">View Stats</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎭</div>
+                    <h3>Personality</h3>
+                    <p>Manage AI personality traits</p>
+                    <a href="/personality" class="btn">Personality</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🤔</div>
+                    <h3>Decision</h3>
+                    <p>AI decision making system</p>
+                    <a href="/decision" class="btn">Make Decision</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Interact</h3>
+                    <p>Interact with AI system</p>
+                    <a href="/interact" class="btn">Interact</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🪞</div>
+                    <h3>Reflect</h3>
+                    <p>Memory reflection view</p>
+                    <a href="/reflect" class="btn">Reflect</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="quick-actions">
+            <h2>Quick Actions</h2>
+            <div class="action-buttons">
+                <a href="/create" class="btn btn-primary">➕ Create Experience</a>
+                <a href="/stats" class="btn btn-secondary">📊 View Statistics</a>
+                <a href="/interact" class="btn btn-secondary">💬 Interact</a>
+            </div>
+        </section>
+    </main>
+
+    <%- include('partials/footer') %>
+    <script src="/js/main.js"></script>
+</body>
+</html>

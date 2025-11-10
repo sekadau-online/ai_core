@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interact - AI Core</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="container">
+        <h1>💬 AI Interaction</h1>
+        
+        <p class="subtitle">Analyze experiences and patterns</p>
+
+        <% if (typeof error !== 'undefined') { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <% if (interaction) { %>
+            <div class="interaction-result">
+                <div class="info-card">
+                    <h3>📊 Analysis Summary</h3>
+                    <p><%= interaction.analysis %></p>
+                    <div class="stat-row">
+                        <strong>Total Experiences:</strong> <%= interaction.experience_count %>
+                    </div>
+                </div>
+
+                <% if (interaction.pattern_summary && interaction.pattern_summary.length > 0) { %>
+                    <div class="info-card">
+                        <h3>🔥 Top Patterns</h3>
+                        <ul class="pattern-summary-list">
+                            <% interaction.pattern_summary.forEach(pattern => { %>
+                                <li><%= pattern %></li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                <% } %>
+                
+                <div class="info-card">
+                    <p>💡 <strong>Tip:</strong> Check the server logs for detailed interaction output!</p>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <p>Loading interaction data...</p>
+            </div>
+        <% } %>
+
+        <div class="action-buttons">
+            <a href="/interact" class="btn btn-primary">🔄 Refresh Analysis</a>
+            <a href="/stats" class="btn btn-secondary">📊 View Full Statistics</a>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

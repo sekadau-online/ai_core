@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflect - AI Core</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="container">
+        <h1>🪞 Memory Reflection</h1>
+        
+        <p class="subtitle">Structured view of all stored experiences</p>
+
+        <% if (typeof error !== 'undefined') { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <% if (reflection) { %>
+            <div class="reflection-summary">
+                <h3>Total Experiences: <%= reflection.total_experiences %></h3>
+                <p>💡 Check server logs for detailed console reflection output!</p>
+            </div>
+
+            <% if (reflection.experiences && reflection.experiences.length > 0) { %>
+                <div class="timeline">
+                    <% reflection.experiences.forEach((exp, index) => { %>
+                        <div class="timeline-item">
+                            <div class="timeline-marker"><%= index + 1 %></div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <span class="timeline-time">🕐 <%= exp.timestamp %></span>
+                                    <span class="timeline-source"><%= exp.source %></span>
+                                </div>
+                                <div class="timeline-text">
+                                    <%= exp.content %>
+                                </div>
+                                <div class="timeline-footer">
+                                    <small>ID: <%= exp.id %></small>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <p>No experiences to reflect upon yet</p>
+                    <a href="/create" class="btn">Create your first experience</a>
+                </div>
+            <% } %>
+        <% } else { %>
+            <div class="empty-state">
+                <p>Loading reflection data...</p>
+            </div>
+        <% } %>
+
+        <div class="action-buttons">
+            <a href="/reflect" class="btn btn-primary">🔄 Refresh Reflection</a>
+            <a href="/experiences" class="btn btn-secondary">📝 View All Experiences</a>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

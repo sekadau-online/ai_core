@@ -1,0 +1,351 @@
+{
+  "info": {
+    "name": "AI Core API",
+    "description": "Complete API collection for AI Core system with authentication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:3000",
+      "type": "string"
+    },
+    {
+      "key": "bearer_token",
+      "value": "rahasia_token_anda_yang_kuat_123456",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Public Endpoints",
+      "item": [
+        {
+          "name": "Root",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            }
+          }
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Experience Management",
+      "item": [
+        {
+          "name": "Get All Experiences",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bearer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/experiences",
+              "host": ["{{base_url}}"],
+              "path": ["experiences"]
+            }
+          }
+        },
+        {
+          "name": "Get Experience by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bearer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/experiences/:id",
+              "host": ["{{base_url}}"],
+              "path": ["experiences", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "exp_123"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Experience",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bearer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"User bertanya tentang cuaca hari ini\",\n  \"source\": \"user\",\n  \"metadata\": \"weather_query\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/experiences",
+              "host": ["{{base_url}}"],
+              "path": ["experiences"]
+            }
+          }
+        },
+        {
+          "name": "Search Experiences",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bearer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/experiences/search?q=cuaca",
+              "host": ["{{base_url}}"],
+              "path": ["experiences", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "cuaca"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pattern Analysis",
+      "item": [
+        {
+          "name": "Get Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bearer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/stats",
+              "host": ["{{base_url}}"],
+              "path": ["stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Pattern Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bearer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/patterns/:keyword",
+              "host": ["{{base_url}}"],
+              "path": ["patterns", ":keyword"],
+              "variable": [
+                {
+                  "key": "keyword",
+                  "value": "cuaca"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Clear Patterns",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bearer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/patterns/clear",
+              "host": ["{{base_url}}"],
+              "path": ["patterns", "clear"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Decision Making",
+      "item": [
+        {
+          "name": "Make Decision",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bearer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/decision",
+              "host": ["{{base_url}}"],
+              "path": ["decision"]
+            }
+          }
+        },
+        {
+          "name": "Make Decision for Query",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bearer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/decision/query?q=what+to+do",
+              "host": ["{{base_url}}"],
+              "path": ["decision", "query"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "what to do"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Interaction",
+      "item": [
+        {
+          "name": "Interact with AI",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bearer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/interact",
+              "host": ["{{base_url}}"],
+              "path": ["interact"]
+            }
+          }
+        },
+        {
+          "name": "Update Personality",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bearer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"User bertanya dengan sopan dan penuh perhatian\",\n  \"response\": \"Tentu, saya akan membantu Anda\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/personality",
+              "host": ["{{base_url}}"],
+              "path": ["personality"]
+            }
+          }
+        },
+        {
+          "name": "Reflect Memory",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bearer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reflect",
+              "host": ["{{base_url}}"],
+              "path": ["reflect"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Memory Management",
+      "item": [
+        {
+          "name": "Clear Memory",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bearer_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/memory/clear",
+              "host": ["{{base_url}}"],
+              "path": ["memory", "clear"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

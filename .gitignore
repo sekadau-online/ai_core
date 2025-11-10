@@ -1,0 +1,28 @@
+# Rust build artifacts
+/target
+Cargo.lock
+
+# Environment variables
+.env
+
+# Data files
+data/memory.json
+data/*.json
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*~

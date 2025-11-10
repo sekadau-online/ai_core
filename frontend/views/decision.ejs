@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision - AI Core</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="container">
+        <h1>🤔 AI Decision Making</h1>
+
+        <div class="decision-container">
+            <form action="/decision" method="GET" class="search-form">
+                <input 
+                    type="text" 
+                    name="q" 
+                    placeholder="Enter query for specific decision (optional)..." 
+                    value="<%= query %>"
+                    class="search-input"
+                >
+                <button type="submit" class="btn btn-primary">Make Decision</button>
+            </form>
+            
+            <% if (!query) { %>
+                <p class="help-text">Leave empty for general decision based on all experiences</p>
+            <% } %>
+        </div>
+
+        <% if (typeof error !== 'undefined') { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <% if (decision) { %>
+            <div class="decision-result">
+                <h2>Decision Result</h2>
+                <div class="decision-card">
+                    <div class="decision-action">
+                        <span class="label">Action:</span>
+                        <span class="value"><%= decision.action %></span>
+                    </div>
+                    <div class="decision-confidence">
+                        <span class="label">Confidence:</span>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: <%= decision.confidence * 100 %>%"></div>
+                        </div>
+                        <span class="value"><%= (decision.confidence * 100).toFixed(1) %>%</span>
+                    </div>
+                    <div class="decision-reasoning">
+                        <span class="label">Reasoning:</span>
+                        <p class="value"><%= decision.reasoning %></p>
+                    </div>
+                    <div class="decision-timestamp">
+                        <small>Generated at: <%= new Date(decision.timestamp).toLocaleString() %></small>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

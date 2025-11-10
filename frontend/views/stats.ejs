@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics - AI Core</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="container">
+        <h1>📊 Statistics & Patterns</h1>
+
+        <% if (typeof error !== 'undefined') { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <% if (stats) { %>
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-value"><%= stats.total_experiences %></div>
+                    <div class="stat-label">Total Experiences</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value"><%= stats.total_patterns %></div>
+                    <div class="stat-label">Total Patterns</div>
+                </div>
+            </div>
+
+            <% if (stats.top_patterns && stats.top_patterns.length > 0) { %>
+                <section class="patterns-section">
+                    <h2>🔥 Top Patterns</h2>
+                    <div class="patterns-list">
+                        <% stats.top_patterns.forEach((pattern, index) => { %>
+                            <div class="pattern-card">
+                                <div class="pattern-rank">#<%= index + 1 %></div>
+                                <div class="pattern-info">
+                                    <h3><%= pattern.keyword %></h3>
+                                    <div class="pattern-stats">
+                                        <span>Frequency: <strong><%= pattern.frequency %></strong></span>
+                                        <span>Experiences: <strong><%= pattern.experience_count %></strong></span>
+                                    </div>
+                                </div>
+                                <button onclick="viewPattern('<%= pattern.keyword %>')" class="btn btn-small">
+                                    View Details
+                                </button>
+                            </div>
+                        <% }); %>
+                    </div>
+                </section>
+            <% } else { %>
+                <div class="empty-state">
+                    <p>No patterns found yet</p>
+                </div>
+            <% } %>
+
+            <!-- Pattern Details Modal -->
+            <div id="patternModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <div id="patternDetails"></div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <p>Loading statistics...</p>
+            </div>
+        <% } %>
+    </main>
+
+    <%- include('partials/footer') %>
+    <script>
+        async function viewPattern(keyword) {
+            const modal = document.getElementById('patternModal');
+            const detailsDiv = document.getElementById('patternDetails');
+            
+            detailsDiv.innerHTML = '<p>Loading...</p>';
+            modal.style.display = 'block';
+            
+            try {
+                const response = await fetch(`/api/patterns/${encodeURIComponent(keyword)}`);
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    const pattern = data.data;
+                    let html = `
+                        <h2>Pattern: ${pattern.keyword}</h2>
+                        <div class="pattern-detail-stats">
+                            <p><strong>Frequency:</strong> ${pattern.frequency}</p>
+                            <p><strong>Experience Count:</strong> ${pattern.experience_ids.length}</p>
+                        </div>
+                        <h3>Related Experiences:</h3>
+                        <ul class="related-experiences">
+                    `;
+                    
+                    pattern.related_experiences.forEach(exp => {
+                        html += `<li>${exp}</li>`;
+                    });
+                    
+                    html += '</ul>';
+                    detailsDiv.innerHTML = html;
+                } else {
+                    detailsDiv.innerHTML = '<p>Pattern not found</p>';
+                }
+            } catch (error) {
+                detailsDiv.innerHTML = '<p>Error loading pattern details</p>';
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('patternModal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('patternModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Experience - AI Core</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="container">
+        <h1>➕ Create New Experience</h1>
+
+        <div class="form-container">
+            <form id="createForm" onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label for="content">Content *</label>
+                    <textarea 
+                        id="content" 
+                        name="content" 
+                        rows="5" 
+                        required 
+                        placeholder="Enter experience content..."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="source">Source</label>
+                    <select id="source" name="source">
+                        <option value="user">User</option>
+                        <option value="system">System</option>
+                        <option value="ai">AI</option>
+                        <option value="sensor">Sensor</option>
+                        <option value="external">External</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="metadata">Metadata (Optional)</label>
+                    <input 
+                        type="text" 
+                        id="metadata" 
+                        name="metadata" 
+                        placeholder="Additional metadata..."
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">💾 Save Experience</button>
+                    <a href="/experiences" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+
+            <div id="result" class="result-message" style="display: none;"></div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+    <script>
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const resultDiv = document.getElementById('result');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Saving...';
+            
+            const formData = {
+                content: form.content.value,
+                source: form.source.value,
+                metadata: form.metadata.value || null
+            };
+            
+            try {
+                const response = await fetch('/api/experiences', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result-message alert alert-success';
+                    resultDiv.textContent = '✅ Experience created successfully!';
+                    resultDiv.style.display = 'block';
+                    
+                    // Reset form
+                    form.reset();
+                    
+                    // Redirect after 1.5 seconds
+                    setTimeout(() => {
+                        window.location.href = '/experiences';
+                    }, 1500);
+                } else {
+                    throw new Error(data.message || 'Failed to create experience');
+                }
+            } catch (error) {
+                resultDiv.className = 'result-message alert alert-error';
+                resultDiv.textContent = '❌ Error: ' + error.message;
+                resultDiv.style.display = 'block';
+                
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = '💾 Save Experience';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - AI Core</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="container">
+        <h1>🔍 Search Experiences</h1>
+
+        <div class="search-container">
+            <form action="/search" method="GET" class="search-form">
+                <input 
+                    type="text" 
+                    name="q" 
+                    placeholder="Search for experiences..." 
+                    value="<%= query %>"
+                    class="search-input"
+                    autofocus
+                >
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+
+        <% if (typeof error !== 'undefined') { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <% if (query) { %>
+            <h2>Results for "<%= query %>"</h2>
+            
+            <% if (results && results.length > 0) { %>
+                <p class="search-count">Found <%= results.length %> result(s)</p>
+                <div class="experiences-list">
+                    <% results.forEach(exp => { %>
+                        <div class="experience-card">
+                            <div class="exp-header">
+                                <span class="exp-source"><%= exp.source %></span>
+                                <span class="exp-time"><%= new Date(exp.timestamp).toLocaleString() %></span>
+                            </div>
+                            <div class="exp-content">
+                                <%= exp.content %>
+                            </div>
+                            <% if (exp.metadata) { %>
+                                <div class="exp-metadata">
+                                    <small>Metadata: <%= exp.metadata %></small>
+                                </div>
+                            <% } %>
+                            <div class="exp-footer">
+                                <small>ID: <%= exp.id %></small>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <p>😔 No results found for "<%= query %>"</p>
+                    <p>Try a different search term</p>
+                </div>
+            <% } %>
+        <% } %>
+    </main>
+
+    <%- include('partials/footer') %>
+    <script src="/js/main.js"></script>
+</body>
+</html>

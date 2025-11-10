@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experiences - AI Core</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="container">
+        <h1>📝 Experiences</h1>
+        
+        <% if (typeof error !== 'undefined') { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <% if (typeof message !== 'undefined') { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+
+        <div class="actions-bar">
+            <a href="/create" class="btn btn-primary">➕ Create New Experience</a>
+            <button onclick="clearMemory()" class="btn btn-danger">🗑️ Clear All Memory</button>
+        </div>
+
+        <% if (experiences && experiences.length > 0) { %>
+            <div class="experiences-list">
+                <% experiences.forEach(exp => { %>
+                    <div class="experience-card">
+                        <div class="exp-header">
+                            <span class="exp-source"><%= exp.source %></span>
+                            <span class="exp-time"><%= new Date(exp.timestamp).toLocaleString() %></span>
+                        </div>
+                        <div class="exp-content">
+                            <%= exp.content %>
+                        </div>
+                        <% if (exp.metadata) { %>
+                            <div class="exp-metadata">
+                                <small>Metadata: <%= exp.metadata %></small>
+                            </div>
+                        <% } %>
+                        <div class="exp-footer">
+                            <small>ID: <%= exp.id %></small>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <p>😔 No experiences yet</p>
+                <a href="/create" class="btn">Create your first experience</a>
+            </div>
+        <% } %>
+    </main>
+
+    <%- include('partials/footer') %>
+    <script src="/js/main.js"></script>
+    <script>
+        async function clearMemory() {
+            if (!confirm('Are you sure you want to clear all memory? This cannot be undone!')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/memory/clear', { method: 'DELETE' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ Memory cleared successfully!');
+                    window.location.reload();
+                } else {
+                    alert('❌ Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
