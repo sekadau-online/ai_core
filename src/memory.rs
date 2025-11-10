@@ -25,6 +25,11 @@ impl Memory {
         }
     }
 
+    /// Create memory from existing experiences
+    pub fn from_experiences(experiences: Vec<Experience>) -> Self {
+        Self { experiences }
+    }
+
     /// Get all experiences as a slice
     pub fn get_experiences(&self) -> &[Experience] {
         &self.experiences

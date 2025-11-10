@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Chat - AI Core</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .chat-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .chat-box {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h2 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .session-info {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant {
+            align-self: flex-start;
+            background: #f0f0f0;
+            color: #2c3e50;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-meta {
+            font-size: 0.75em;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .context-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            margin-left: 8px;
+        }
+
+        .chat-input-area {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            background: #f9f9f9;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .input-wrapper textarea {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            resize: none;
+            font-family: inherit;
+            font-size: 14px;
+            min-height: 50px;
+            max-height: 150px;
+        }
+
+        .input-wrapper textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .chat-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-send {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .btn-send:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-upload, .btn-export {
+            padding: 8px 16px;
+            background: #34495e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background 0.2s;
+        }
+
+        .btn-upload:hover, .btn-export:hover {
+            background: #2c3e50;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: #555;
+        }
+
+        .feature-list li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .file-upload-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .file-upload-section h4 {
+            margin-top: 0;
+            color: #34495e;
+        }
+
+        input[type="file"] {
+            margin: 10px 0;
+        }
+
+        .export-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .export-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .curl-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .curl-section textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #060;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                padding: 10px;
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+
+            .export-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <div class="container">
+        <h1>💬 Live Chat dengan AI</h1>
+        <p>Berinteraksi dengan AI yang memiliki akses ke semua memori dan pengalaman</p>
+
+        <div class="chat-container">
+            <div class="chat-box">
+                <div class="chat-header">
+                    <div>
+                        <h2>Chat Session</h2>
+                        <div class="session-info" id="sessionInfo">Memulai sesi baru...</div>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message assistant">
+                        <div>Halo! Saya adalah AI Core. Saya memiliki akses ke semua memori dan pengalaman yang tersimpan. Silakan tanyakan apa saja!</div>
+                        <div class="message-meta">Sistem</div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="messageInput" 
+                            placeholder="Ketik pesan Anda di sini... (Tekan Enter untuk kirim, Shift+Enter untuk baris baru)"
+                            rows="2"></textarea>
+                        <div class="chat-actions">
+                            <button class="btn-send" id="sendBtn" onclick="sendMessage()">
+                                📤 Kirim
+                            </button>
+                            <button class="btn-upload" onclick="document.getElementById('fileInput').click()">
+                                📎 Upload
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1000px; margin: 20px auto;">
+            <!-- File Upload Section -->
+            <div class="sidebar">
+                <h3>📄 Upload Dokumen</h3>
+                <p style="color: #666; font-size: 0.9em;">Upload file untuk menambahkan ke memori AI</p>
+                
+                <input type="file" id="fileInput" accept=".txt,.json,.csv" style="display: none;" onchange="uploadFile()">
+                
+                <div class="file-upload-section">
+                    <h4>Format yang didukung:</h4>
+                    <ul class="feature-list">
+                        <li>Text (.txt)</li>
+                        <li>JSON (.json)</li>
+                        <li>CSV (.csv)</li>
+                    </ul>
+                    <button class="btn-upload" style="width: 100%;" onclick="document.getElementById('fileInput').click()">
+                        Pilih File
+                    </button>
+                    <div id="uploadStatus"></div>
+                </div>
+            </div>
+
+            <!-- Export & Curl Section -->
+            <div class="sidebar">
+                <h3>💾 Export & Tools</h3>
+                
+                <div class="export-section">
+                    <h4>Export Percakapan</h4>
+                    <div class="export-buttons">
+                        <button class="btn-export" onclick="exportChat('json')">JSON</button>
+                        <button class="btn-export" onclick="exportChat('txt')">TXT</button>
+                        <button class="btn-export" onclick="exportChat('markdown')">Markdown</button>
+                        <button class="btn-export" onclick="exportChat('html')">HTML</button>
+                    </div>
+                </div>
+
+                <div class="curl-section">
+                    <h4>🔌 HTTP Request & Learning</h4>
+                    
+                    <select id="httpMethod" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 6px; border: 2px solid #e0e0e0;">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                    
+                    <input type="text" id="httpUrl" placeholder="https://api.example.com/data" 
+                           style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 6px; border: 2px solid #e0e0e0;">
+                    
+                    <textarea id="httpBody" placeholder="Request body (JSON)" 
+                              style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 12px; resize: vertical; min-height: 60px; margin-bottom: 10px;"></textarea>
+                    
+                    <label style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <input type="checkbox" id="saveToMemory" checked style="margin-right: 8px;">
+                        <span style="font-size: 0.9em;">Save to learning records</span>
+                    </label>
+                    
+                    <button class="btn-export" style="width: 100%; margin-bottom: 10px;" onclick="executeHttpRequest()">
+                        🚀 Execute & Learn
+                    </button>
+                    
+                    <button class="btn-export" style="width: 100%; background: #27ae60;" onclick="viewLearningRecords()">
+                        📚 View Learning Records
+                    </button>
+                    
+                    <div id="httpOutput"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        let currentSessionId = null;
+        const API_URL = '<%= apiUrl %>';
+        const BEARER_TOKEN = '<%= bearerToken %>';
+
+        // Handle Enter key in textarea
+        document.getElementById('messageInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            sendBtn.textContent = '⏳ Mengirim...';
+
+            // Add user message to UI
+            addMessageToUI('user', message);
+            input.value = '';
+
+            try {
+                const response = await fetch(`${API_URL}/chat/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${BEARER_TOKEN}`
+                    },
+                    body: JSON.stringify({
+                        content: message,
+                        session_id: currentSessionId
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    currentSessionId = result.data.session_id;
+                    updateSessionInfo(currentSessionId, result.data.context_count);
+                    
+                    // Add AI response to UI
+                    const aiMessage = result.data.message;
+                    addMessageToUI('assistant', aiMessage.content, aiMessage.context_used);
+                } else {
+                    throw new Error(result.message || 'Failed to send message');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessageToUI('assistant', `❌ Error: ${error.message}`);
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = '📤 Kirim';
+            }
+        }
+
+        function addMessageToUI(role, content, contextUsed = null) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            let html = `<div>${content}</div>`;
+            
+            if (contextUsed && contextUsed.length > 0) {
+                html += `<div class="message-meta">
+                    ${new Date().toLocaleTimeString()}
+                    <span class="context-badge">🧠 ${contextUsed.length} konteks</span>
+                </div>`;
+            } else {
+                html += `<div class="message-meta">${new Date().toLocaleTimeString()}</div>`;
+            }
+            
+            messageDiv.innerHTML = html;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function updateSessionInfo(sessionId, contextCount) {
+            const sessionInfo = document.getElementById('sessionInfo');
+            sessionInfo.textContent = `Session: ${sessionId.substring(0, 8)}... | Context: ${contextCount} experiences`;
+        }
+
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.innerHTML = '<div class="loading">📤 Mengupload file...</div>';
+
+            try {
+                const content = await readFileContent(file);
+                const fileType = file.name.split('.').pop().toLowerCase();
+
+                const response = await fetch(`${API_URL}/chat/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${BEARER_TOKEN}`
+                    },
+                    body: JSON.stringify({
+                        filename: file.name,
+                        content: content,
+                        filetype: fileType
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    statusDiv.innerHTML = `<div class="success-message">✅ ${result.message}</div>`;
+                    addMessageToUI('assistant', `📄 File "${file.name}" berhasil diupload dan ditambahkan ke memori saya.`);
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                statusDiv.innerHTML = `<div class="error-message">❌ ${error.message}</div>`;
+            }
+            
+            fileInput.value = '';
+        }
+
+        function readFileContent(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        }
+
+        async function exportChat(format) {
+            if (!currentSessionId) {
+                alert('Belum ada percakapan untuk diekspor. Mulai chat terlebih dahulu.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/chat/export?session_id=${currentSessionId}&format=${format}`, {
+                    headers: {
+                        'Authorization': `Bearer ${BEARER_TOKEN}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    // Download the exported content
+                    const blob = new Blob([result.data], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `chat_${currentSessionId.substring(0, 8)}.${format}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    addMessageToUI('assistant', `✅ Chat berhasil diekspor sebagai ${format.toUpperCase()}`);
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert(`Error exporting chat: ${error.message}`);
+            }
+        }
+
+        async function executeHttpRequest() {
+            const method = document.getElementById('httpMethod').value;
+            const url = document.getElementById('httpUrl').value.trim();
+            const body = document.getElementById('httpBody').value.trim();
+            const saveToMemory = document.getElementById('saveToMemory').checked;
+            const outputDiv = document.getElementById('httpOutput');
+
+            if (!url) {
+                alert('Masukkan URL terlebih dahulu');
+                return;
+            }
+
+            outputDiv.innerHTML = '<div class="loading">⏳ Executing HTTP request...</div>';
+
+            try {
+                const requestData = {
+                    method: method,
+                    url: url,
+                    save_to_memory: saveToMemory
+                };
+
+                // Add body if provided and method supports it
+                if (body && ['POST', 'PUT'].includes(method)) {
+                    try {
+                        JSON.parse(body); // Validate JSON
+                        requestData.body = body;
+                    } catch (e) {
+                        throw new Error('Request body must be valid JSON');
+                    }
+                }
+
+                const response = await fetch(`${API_URL}/api-learning/execute`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${BEARER_TOKEN}`
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const statusClass = result.data.success ? 'success-message' : 'error-message';
+                    let output = `<div class="${statusClass}" style="margin-top: 10px; font-size: 0.85em; max-height: 200px; overflow-y: auto;">
+                        <strong>Status:</strong> ${result.data.status}<br>`;
+                    
+                    if (result.data.learning_record_id) {
+                        output += `<strong>Record ID:</strong> ${result.data.learning_record_id}<br>`;
+                    }
+                    
+                    output += `<strong>Response:</strong><br>
+                        <pre style="margin: 5px 0; white-space: pre-wrap;">${result.data.body}</pre>
+                    </div>`;
+                    
+                    outputDiv.innerHTML = output;
+                    
+                    if (result.data.success) {
+                        addMessageToUI('assistant', `� ${method} request to ${url}\nStatus: ${result.data.status}\n${saveToMemory ? '✅ Saved to learning records' : ''}`);
+                    }
+                } else {
+                    throw new Error(result.message || 'Request failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                outputDiv.innerHTML = `<div class="error-message" style="margin-top: 10px;">❌ ${error.message}</div>`;
+            }
+        }
+
+        async function viewLearningRecords() {
+            try {
+                const response = await fetch(`${API_URL}/api-learning/records`, {
+                    headers: {
+                        'Authorization': `Bearer ${BEARER_TOKEN}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const records = result.data;
+                    
+                    if (records.length === 0) {
+                        addMessageToUI('assistant', '📚 Belum ada learning records. Execute HTTP request dengan "Save to learning records" dicentang untuk mulai belajar.');
+                        return;
+                    }
+                    
+                    let message = `📚 **${records.length} Learning Records:**\n\n`;
+                    
+                    records.slice(0, 10).forEach((record, idx) => {
+                        message += `${idx + 1}. **${record.method}** ${record.url}\n`;
+                        message += `   Status: ${record.status_code} | Tags: ${record.tags.join(', ')}\n`;
+                        message += `   ${record.summary}\n`;
+                        message += `   ID: ${record.id}\n\n`;
+                    });
+                    
+                    if (records.length > 10) {
+                        message += `... dan ${records.length - 10} records lainnya\n\n`;
+                    }
+                    
+                    message += `💡 Gunakan "Cari learning records" untuk mencari berdasarkan tag atau URL`;
+                    
+                    addMessageToUI('assistant', message);
+                } else {
+                    throw new Error(result.message || 'Failed to fetch records');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessageToUI('assistant', `❌ Error: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>

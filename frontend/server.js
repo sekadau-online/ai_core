@@ -214,6 +214,14 @@ app.get('/reflect', async (req, res) => {
     }
 });
 
+// Chat page
+app.get('/chat', (req, res) => {
+    res.render('chat', {
+        apiUrl: BACKEND_URL,
+        bearerToken: BEARER_TOKEN
+    });
+});
+
 // API proxy endpoints for AJAX calls
 app.delete('/api/memory/clear', async (req, res) => {
     try {

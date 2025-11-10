@@ -170,6 +170,20 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
 # Clear memory
 curl -X DELETE -H "Authorization: Bearer $TOKEN" \
   http://localhost:3000/memory/clear
+
+# API Learning - Execute HTTP request and learn
+curl -X POST -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"method":"GET","url":"https://api.github.com/users/github","save_to_memory":true}' \
+  http://localhost:3000/api-learning/execute
+
+# Get learning records
+curl -H "Authorization: Bearer $TOKEN" \
+  http://localhost:3000/api-learning/records
+
+# Search learning records
+curl -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:3000/api-learning/search?q=github"
 ```
 
 ## 🎉 Happy Coding!
